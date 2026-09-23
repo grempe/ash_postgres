@@ -3307,7 +3307,8 @@ defmodule AshPostgres.DataLayer do
   # common case is an integer outside the `bigint` range: `Ash.Type.Integer` accepts any
   # Elixir integer, because other data layers have no such limit, so only the data layer
   # can reject it. The error carries only a message, which is not parsed, so the value
-  # and the attribute are not reported.
+  # and the attribute are not reported (`no_value?: true` keeps the value out of the
+  # message instead of rendering it as `nil`).
   defp handle_raised_error(%DBConnection.EncodeError{}, stacktrace, context, resource) do
     handle_raised_error(encode_error(context), stacktrace, context, resource)
   end
@@ -3368,7 +3369,11 @@ defmodule AshPostgres.DataLayer do
     do: Ash.Error.Changes.InvalidChanges.exception(message: @encode_error_message)
 
   defp encode_error(_query),
-    do: Ash.Error.Query.InvalidFilterValue.exception(message: @encode_error_message)
+    do:
+      Ash.Error.Query.InvalidFilterValue.exception(
+        no_value?: true,
+        message: @encode_error_message
+      )
 
   defp duration_types_hint do
     """

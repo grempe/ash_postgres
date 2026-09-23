@@ -18,8 +18,10 @@ defmodule AshPostgres.EncodeErrorTest do
              |> Ash.Query.filter(score == ^@too_big)
              |> Ash.read()
 
-    assert %Ash.Error.Query.InvalidFilterValue{message: message} = error
-    refute message =~ "Postgrex"
+    assert %Ash.Error.Query.InvalidFilterValue{no_value?: true} = error
+
+    assert Exception.message(error) =~
+             "Invalid filter value: a value does not fit the type of its column"
   end
 
   test "an update with an integer past the bigint range is an invalid change" do
