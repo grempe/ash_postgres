@@ -3446,8 +3446,10 @@ defmodule AshPostgres.DataLayer do
     Ash.Error.Changes.InvalidChanges.exception(message: message)
   end
 
+  # The value that failed is not known here, so leave it out of the message rather
+  # than render it as `nil`
   defp repertoire_error(_query, message) do
-    Ash.Error.Query.InvalidFilterValue.exception(message: message)
+    Ash.Error.Query.InvalidFilterValue.exception(no_value?: true, message: message)
   end
 
   defp unstorable_text?(value) when is_binary(value),

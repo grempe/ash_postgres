@@ -17,7 +17,8 @@ defmodule AshPostgres.RepertoireErrorTest do
     assert {:error, %Ash.Error.Invalid{errors: [%Ash.Error.Query.InvalidFilterValue{} = error]}} =
              Post |> Ash.Query.filter(title == ^@nul) |> Ash.read()
 
-    assert error.message =~ "invalid byte sequence"
+    assert error.no_value?
+    assert Exception.message(error) =~ "Invalid filter value: invalid byte sequence"
   end
 
   test "an update with a NUL byte names the attribute" do
